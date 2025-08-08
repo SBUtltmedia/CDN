@@ -344,14 +344,25 @@
             const totalWidth = svgMap.parentElement.clientWidth;
             const totalHeight = svgMap.parentElement.clientHeight;
             
-            const levelHeight = totalHeight / (Object.keys(levelWidths).length + 1);
+            // --- MODIFICATION FOR TIGHT FIT ---
+            const numLevels = Object.keys(levelWidths).length;
+            const maxLevel = numLevels > 1 ? numLevels - 1 : 1;
+            const nodeRadius = 15; // The radius of the station circles/rects
+            const usableHeight = totalHeight - (nodeRadius * 2); // The height between the center of the first node and center of the last
 
             for (const key in mapLayout) {
                 const node = mapLayout[key];
                 const widthPerNode = totalWidth / (levelWidths[node.level] + 1);
                 node.cx = widthPerNode * (node.position + 1);
-                node.cy = levelHeight * (node.level + 1);
+
+                // Calculate cy to fit tightly from edge to edge
+                if (numLevels <= 1) {
+                    node.cy = totalHeight / 2; // Center if only one level
+                } else {
+                    node.cy = nodeRadius + (node.level * (usableHeight / maxLevel));
+                }
             }
+            // --- END MODIFICATION ---
         }
 
         function renderSubwayMap() {
