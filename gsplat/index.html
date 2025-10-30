@@ -83,30 +83,58 @@
     function renderGrid(){
       grid.innerHTML=''; for(let i=0;i<TOTAL;i++) grid.appendChild(mkThumb(i));
       grid.style.display='grid'; viewer.style.display='none';
-      history.replaceState({}, '', location.pathname);
+      try {
+        history.replaceState({}, '', location.pathname);
+      } catch (e) {
+        console.warn("History API (replaceState) failed:", e.message);
+      }
     }
 
-    function openSplat(i){ history.pushState({id:i},'',`?id=${i}`); loadViewer(i); }
+    function openSplat(i){
+      try {
+        history.pushState({id:i},'',`?id=${i}`);
+      } catch (e) {
+        console.warn("History API (pushState) failed:", e.message);
+      }
+      loadViewer(i);
+    }
     window.addEventListener('popstate',()=>{ const id=new URLSearchParams(location.search).get('id'); if(id==null) renderGrid(); else loadViewer(parseInt(id,10)); });
 
-    backBtn.addEventListener('click', ()=>{ history.pushState({}, '', location.pathname); renderGrid(); });
+    backBtn.addEventListener('click', ()=>{
+      try {
+        history.pushState({}, '', location.pathname);
+      } catch (e) {
+        console.warn("History API (pushState) failed:", e.message);
+      }
+      renderGrid();
+    });
 
     // ---- Resilient UMD script loader ----
     function loadScript(u){ return new Promise((res,rej)=>{ const s=document.createElement('script'); s.src=u; s.async=true; s.crossOrigin='anonymous'; s.onload=()=>res(u); s.onerror=()=>rej(new Error('Failed '+u)); document.head.appendChild(s); }); }
     async function loadAny(list){ let last; for(const u of list){ try{ return await loadScript(u);}catch(e){ last=e; } } throw last||new Error('All sources failed'); }
 
+    // NEW: Point to your GitHub Pages CDN
+    const GH_PAGES_BASE = 'https://sbutltmedia.github.io/CDN/gsplat/';
+
     const CDN={
       babylon:[
+        GH_PAGES_BASE + 'babylon.min.js',
+        // Fallbacks:
         'https://cdn.jsdelivr.net/npm/babylonjs@8.1.1/babylon.min.js',
         'https://unpkg.com/babylonjs@8.1.1/babylon.min.js',
         'https://cdnjs.cloudflare.com/ajax/libs/babylonjs/8.1.1/babylon.min.js'
       ],
       loaders:[
+        GH_PAGES_BASE + 'babylonjs.loaders.min.js',
+        // Fallbacks:
         'https://cdn.jsdelivr.net/npm/babylonjs-loaders@8.1.1/babylonjs.loaders.min.js',
         'https://unpkg.com/babylonjs-loaders@8.1.1/babylonjs.loaders.min.js',
         'https://cdnjs.cloudflare.com/ajax/libs/babylonjs/8.1.1/babylonjs.loaders.min.js'
       ],
       splat:[
+        // This assumes you have a 'SPLAT' folder inside your 'gsplat' directory
+        GH_PAGES_BASE + 'SPLAT/splatFileLoader.min.js',
+        // Fallbacks:
         'https://cdn.jsdelivr.net/npm/@babylonjs/loaders@8.1.1/SPLAT/splatFileLoader.min.js',
         'https://unpkg.com/@babylonjs/loaders@8.1.1/SPLAT/splatFileLoader.min.js'
       ]
@@ -210,3 +238,5 @@
   </script>
 </body>
 </html>
+
+
