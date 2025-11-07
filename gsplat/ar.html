@@ -87,6 +87,41 @@
         </model-viewer>
     </div>
 
+    <script>
+        const modelViewer = document.querySelector("model-viewer");
+        let inactivityTimer = null;
+
+        function startInactivityTimer() {
+            if (inactivityTimer) {
+                clearTimeout(inactivityTimer);
+            }
+            inactivityTimer = setTimeout(() => {
+                if (modelViewer) {
+                    modelViewer.resetTurntableRotation();
+                    modelViewer.setAttribute('auto-rotate', '');
+                }
+            }, 60000); // 1 minute
+        }
+
+        function handleInteraction() {
+            if (modelViewer.hasAttribute('auto-rotate')) {
+                modelViewer.removeAttribute('auto-rotate');
+            }
+            startInactivityTimer();
+        }
+
+        // Start with rotation and timer
+        modelViewer.addEventListener('load', () => {
+            startInactivityTimer();
+        });
+
+        // Stop rotation on user interaction
+        modelViewer.addEventListener('camera-change', (event) => {
+            if (event.detail.source === 'user-interaction') {
+                handleInteraction();
+            }
+        });
+    </script>
 </body>
 </html>
 

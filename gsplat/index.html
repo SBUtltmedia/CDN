@@ -346,7 +346,7 @@
       new BABYLON.HemisphericLight('h', new BABYLON.Vector3(0, 1, 0), scene).intensity = 0;
 
       // WASD/QE pan (relative to camera forward/right)
-      let autoOrbit = false; const keys = { w: false, a: false, s: false, d: false, q: false, e: false };
+      let autoOrbit = true; const keys = { w: false, a: false, s: false, d: false, q: false, e: false };
       function setKey(k, down) { if (k in keys) keys[k] = down; }
       window.addEventListener('keydown', (e) => { const k = (e.key || '').toLowerCase(); setKey(k, true); if (e.key === '0') resetView(); if (k === 'r') autoOrbit = !autoOrbit; });
       window.addEventListener('keyup', (e) => { const k = (e.key || '').toLowerCase(); setKey(k, false); });
