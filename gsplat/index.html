@@ -391,12 +391,11 @@
       await bootViewer();
 
       // focus canvas for WASD
-      setTimeout(() => { try { canvas.focus(); } catch (_) { } }, 0);
+      canvas.focus();
 
       setHUD('Loading ' + NAMES[idx] + '…'); title.textContent = NAMES[idx] + ` — (${idx}.spz)`;
 
       const url = SPZ_PATH + idx + '.spz';
-      try { const head = await fetch(url, { method: 'HEAD' }); console.assert(head.ok, '[TEST] SPZ reachable: ' + url); } catch (e) { console.warn('[TEST] HEAD failed for', url, e); }
 
       if (root) { root.getChildMeshes().forEach(m => m.dispose()); root.dispose(); }
       root = new BABYLON.TransformNode('root', scene);
